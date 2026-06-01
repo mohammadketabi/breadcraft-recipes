@@ -187,3 +187,30 @@ body {
 .nav-links a:hover {
   text-decoration: underline;
 }
+.recipe-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 600px;
+}
+
+.recipe-form input,
+.recipe-form textarea {
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.recipe-form textarea {
+  min-height: 100px;
+}
+
+.recipe-form button {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #2b2118;
+  color: white;
+  cursor: pointer;
+}

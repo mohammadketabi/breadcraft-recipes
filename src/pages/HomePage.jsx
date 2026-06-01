@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-import recipes from "../data/recipes.json";
+import { useEffect, useState } from "react";
+import defaultRecipes from "../data/recipes.json";
 import RecipeCard from "../components/RecipeCard";
 import SearchBar from "../components/SearchBar";
 import CategoryFilter from "../components/CategoryFilter";
@@ -10,6 +11,15 @@ import FeaturedRecipes from "../components/FeaturedRecipes";
 export default function HomePage() {
   const [searchText, setSearchText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [recipes, setRecipes] = useState(defaultRecipes);
+
+  useEffect(() => {
+    const savedRecipes = JSON.parse(localStorage.getItem("recipes"));
+
+    if (savedRecipes) {
+      setRecipes([...defaultRecipes, ...savedRecipes]);
+    }
+  }, []);
 
   const categories = [
     { name: "All", slug: "all" },
