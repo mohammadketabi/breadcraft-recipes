@@ -7,6 +7,7 @@ import CategoryPage from "./pages/CategoryPage";
 import AboutPage from "./pages/AboutPage";
 import AddRecipePage from "./pages/AddRecipePage";
 import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
@@ -17,7 +18,14 @@ export default function App() {
         <Route path="/category/:categorySlug" element={<CategoryPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="*" element={<NotFoundPage />} />
-        <Route path="/add-recipe" element={<AddRecipePage />} />
+        <Route
+          path="/add-recipe"
+          element={
+            <ProtectedRoute>
+              <AddRecipePage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/login" element={<LoginPage />} />
       </Route>
     </Routes>

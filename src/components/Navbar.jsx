@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 import useAuth from "../hooks/useAuth";
 
 export default function Navbar() {
-  const user = useAuth();
+  const { user, loading } = useAuth();
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -19,18 +19,22 @@ export default function Navbar() {
         <Link to="/">Home</Link>
         <Link to="/about">About</Link>
 
-        {user && <Link to="/add-recipe">Add Recipe</Link>}
-
-        {user ? (
-          <>
-            <span>Welcome {user.email}</span>
-            <button onClick={handleLogout}>
-              Logout
-            </button>
-          </>
-        ) : (
-          <Link to="/login">Login</Link>
+        {!loading && user && (
+          <Link to="/add-recipe">Add Recipe</Link>
         )}
+
+        {!loading &&
+          (user ? (
+            <>
+              <span>Welcome {user.email}</span>
+
+              <button onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link to="/login">Login</Link>
+          ))}
       </nav>
     </header>
   );
