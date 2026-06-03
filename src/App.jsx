@@ -6,6 +6,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import CategoryPage from "./pages/CategoryPage";
 import AboutPage from "./pages/AboutPage";
 import AddRecipePage from "./pages/AddRecipePage";
+import LoginPage from "./pages/LoginPage";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="*" element={<NotFoundPage />} />
         <Route path="/add-recipe" element={<AddRecipePage />} />
+        <Route path="/login" element={<LoginPage />} />
       </Route>
     </Routes>
   );
