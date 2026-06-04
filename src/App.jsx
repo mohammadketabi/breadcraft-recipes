@@ -8,6 +8,8 @@ import AboutPage from "./pages/AboutPage";
 import AddRecipePage from "./pages/AddRecipePage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminPage from "./pages/AdminPage";
+import EditRecipePage from "./pages/EditRecipePage";
 
 export default function App() {
   return (
@@ -27,7 +29,23 @@ export default function App() {
           }
         />
         <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
+      <Route
+        path="/edit-recipe/:id"
+        element={
+          <ProtectedRoute>
+            <EditRecipePage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

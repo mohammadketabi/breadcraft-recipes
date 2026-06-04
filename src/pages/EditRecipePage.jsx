@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createRecipe } from "../services/recipeService";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getRecipeById, updateRecipe } from "../services/recipeService";
 
-export default function AddRecipePage() {
+export default function EditRecipePage() {
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
@@ -11,34 +12,58 @@ export default function AddRecipePage() {
   const [image, setImage] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [steps, setSteps] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadRecipe() {
+      try {
+        const recipe = await getRecipeById(id);
+
+        setTitle(recipe.title);
+        setCategory(recipe.category);
+        setTime(recipe.time);
+        setImage(recipe.image);
+        setIngredients(recipe.ingredients.join(", "));
+        setSteps(recipe.steps.join(", "));
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadRecipe();
+  }, [id]);
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
-      const newRecipe = {
+      const updatedRecipe = {
         title,
         category,
         category_slug: category.toLowerCase().replaceAll(" ", "-"),
         time,
         image,
-        featured: false,
         ingredients: ingredients.split(",").map((item) => item.trim()),
         steps: steps.split(",").map((step) => step.trim()),
       };
 
-      await createRecipe(newRecipe);
+      await updateRecipe(id, updatedRecipe);
 
-      navigate("/");
+      navigate("/admin");
     } catch (error) {
-      console.error(error);
       alert(error.message);
     }
   }
 
+  if (loading) {
+    return <p>Loading recipe...</p>;
+  }
+
   return (
     <>
-      <h1>Add New Recipe</h1>
+      <h1>Edit Recipe</h1>
 
       <form onSubmit={handleSubmit} className="recipe-form">
         <input
@@ -81,7 +106,7 @@ export default function AddRecipePage() {
           onChange={(e) => setSteps(e.target.value)}
         />
 
-        <button type="submit">Add Recipe</button>
+        <button type="submit">Update Recipe</button>
       </form>
     </>
   );

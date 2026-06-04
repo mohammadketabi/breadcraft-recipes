@@ -19,18 +19,16 @@ export default function Navbar() {
         <Link to="/">Home</Link>
         <Link to="/about">About</Link>
 
-        {!loading && user && (
-          <Link to="/add-recipe">Add Recipe</Link>
-        )}
+        {!loading && user && <Link to="/add-recipe">Add Recipe</Link>}
+
+        {user && <Link to="/admin">Admin</Link>}
 
         {!loading &&
           (user ? (
             <>
               <span>Welcome {user.email}</span>
 
-              <button onClick={handleLogout}>
-                Logout
-              </button>
+              <button onClick={handleLogout}>Logout</button>
             </>
           ) : (
             <Link to="/login">Login</Link>
