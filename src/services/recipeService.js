@@ -63,3 +63,22 @@ export async function updateRecipe(id, recipe) {
 
   return data;
 }
+
+export async function uploadRecipeImage(file) {
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${Date.now()}.${fileExt}`;
+
+  const { error } = await supabase.storage
+    .from("recipe-images")
+    .upload(fileName, file);
+
+  if (error) {
+    throw error;
+  }
+
+  const { data } = supabase.storage
+    .from("recipe-images")
+    .getPublicUrl(fileName);
+
+  return data.publicUrl;
+}

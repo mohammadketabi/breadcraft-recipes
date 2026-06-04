@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getRecipeById, updateRecipe } from "../services/recipeService";
+import {
+  getRecipeById,
+  updateRecipe,
+  uploadRecipeImage,
+} from "../services/recipeService";
 
 export default function EditRecipePage() {
   const { id } = useParams();
@@ -10,6 +14,7 @@ export default function EditRecipePage() {
   const [category, setCategory] = useState("");
   const [time, setTime] = useState("");
   const [image, setImage] = useState("");
+  const [imageFile, setImageFile] = useState(null);
   const [ingredients, setIngredients] = useState("");
   const [steps, setSteps] = useState("");
   const [loading, setLoading] = useState(true);
@@ -39,12 +44,18 @@ export default function EditRecipePage() {
     e.preventDefault();
 
     try {
+      let imageUrl = image;
+
+      if (imageFile) {
+        imageUrl = await uploadRecipeImage(imageFile);
+      }
+
       const updatedRecipe = {
         title,
         category,
         category_slug: category.toLowerCase().replaceAll(" ", "-"),
         time,
-        image,
+        image: imageUrl,
         ingredients: ingredients.split(",").map((item) => item.trim()),
         steps: steps.split(",").map((step) => step.trim()),
       };
@@ -87,11 +98,18 @@ export default function EditRecipePage() {
           onChange={(e) => setTime(e.target.value)}
         />
 
+        {image && (
+          <img
+            src={image}
+            alt={title}
+            className="recipe-detail-image"
+          />
+        )}
+
         <input
-          type="text"
-          placeholder="Image URL"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImageFile(e.target.files[0])}
         />
 
         <textarea

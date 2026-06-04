@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createRecipe } from "../services/recipeService";
+import { createRecipe, uploadRecipeImage } from "../services/recipeService";
 
 export default function AddRecipePage() {
   const navigate = useNavigate();
@@ -8,12 +8,18 @@ export default function AddRecipePage() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [time, setTime] = useState("");
-  const [image, setImage] = useState("");
+  const [imageFile, setImageFile] = useState(null);
   const [ingredients, setIngredients] = useState("");
   const [steps, setSteps] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    let imageUrl = "";
+
+    if (imageFile) {
+      imageUrl = await uploadRecipeImage(imageFile);
+    }
 
     try {
       const newRecipe = {
@@ -21,7 +27,7 @@ export default function AddRecipePage() {
         category,
         category_slug: category.toLowerCase().replaceAll(" ", "-"),
         time,
-        image,
+        image: imageUrl,
         featured: false,
         ingredients: ingredients.split(",").map((item) => item.trim()),
         steps: steps.split(",").map((step) => step.trim()),
@@ -63,10 +69,9 @@ export default function AddRecipePage() {
         />
 
         <input
-          type="text"
-          placeholder="Image URL"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImageFile(e.target.files[0])}
         />
 
         <textarea
