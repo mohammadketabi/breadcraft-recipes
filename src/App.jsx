@@ -10,6 +10,8 @@ import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminPage from "./pages/AdminPage";
 import EditRecipePage from "./pages/EditRecipePage";
+import AdminRoute from "./components/AdminRoute";
+import ProfilePage from "./pages/ProfilePage";
 
 export default function App() {
   return (
@@ -23,29 +25,37 @@ export default function App() {
         <Route
           path="/add-recipe"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AddRecipePage />
-            </ProtectedRoute>
+            </AdminRoute>
           }
         />
         <Route path="/login" element={<LoginPage />} />
         <Route
           path="/admin"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/edit-recipe/:id"
+          element={
+            <AdminRoute>
+              <EditRecipePage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
             </ProtectedRoute>
           }
         />
       </Route>
-      <Route
-        path="/edit-recipe/:id"
-        element={
-          <ProtectedRoute>
-            <EditRecipePage />
-          </ProtectedRoute>
-        }
-      />
     </Routes>
   );
 }
