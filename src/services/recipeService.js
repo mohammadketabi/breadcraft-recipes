@@ -4,6 +4,7 @@ export async function getRecipes() {
   const { data, error } = await supabase
     .from("recipes")
     .select("*")
+    .eq("is_public", true)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -60,6 +61,29 @@ export async function updateRecipe(id, recipe) {
   if (error) {
     throw error;
   }
+
+  return data;
+}
+
+export async function getAllRecipes() {
+  const { data, error } = await supabase
+    .from("recipes")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return data;
+}
+
+export async function getMyRecipes(userId) {
+  const { data, error } = await supabase
+    .from("recipes")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
 
   return data;
 }

@@ -1,65 +1,95 @@
 import { Link } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient";
-import useAuth from "../hooks/useAuth";
-import useProfile from "../hooks/useProfile";
 import { useState } from "react";
+import { supabase } from "../lib/supabaseClient";
+import useProfile from "../hooks/useProfile";
+import avatarPlaceholder from "../assets/avatar-placeholder.svg";
 
 export default function Navbar() {
-  const { user, loading } = useAuth();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { profile } = useProfile();
+  const { user, loading, profile } = useProfile();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const isAdmin = profile?.role === "admin";
 
+  function closeAll() {
+    setDropdownOpen(false);
+    setMobileOpen(false);
+  }
+
   async function handleLogout() {
+    closeAll();
     await supabase.auth.signOut();
   }
 
   return (
     <header className="navbar">
-      <Link to="/" className="logo">
+      <Link to="/" className="logo" onClick={closeAll}>
         Breadcraft 🍞
       </Link>
 
+      {/* Desktop nav */}
       <nav className="nav-links">
         <Link to="/">All Recipes</Link>
         <Link to="/about">About</Link>
 
-        {!loading &&
-          (user ? (
+        {!loading && (
+          user ? (
             <div className="user-menu">
-              <button
-                className="avatar-button"
-                onClick={() => setMenuOpen(!menuOpen)}
-              >
-                {user.email[0].toUpperCase()}
+              <button className="avatar-button" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                <img src={profile?.avatar_url || avatarPlaceholder} alt="avatar" className="avatar-img" />
               </button>
-
-              {menuOpen && (
+              {dropdownOpen && (
                 <div className="user-dropdown">
-                  <Link to="/profile">Profile</Link>
-
-                  {isAdmin ? (
-                    <Link to="/admin">Admin Dashboard</Link>
-                  ) : (
-                    <Link to="/my-recipes">My Recipes</Link>
-                  )}
-
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      handleLogout();
-                    }}
-                  >
-                    Logout
-                  </button>
+                  <Link to="/profile" onClick={closeAll}>Profile</Link>
+                  <Link to="/my-recipes" onClick={closeAll}>My Recipes</Link>
+                  {isAdmin && <Link to="/admin" onClick={closeAll}>Admin Dashboard</Link>}
+                  <button onClick={handleLogout}>Logout</button>
                 </div>
               )}
             </div>
           ) : (
             <Link to="/login">Login</Link>
-          ))}
+          )
+        )}
       </nav>
+
+      {/* Mobile hamburger button */}
+      <button
+        className="hamburger-btn"
+        onClick={() => setMobileOpen(!mobileOpen)}
+        aria-label="Toggle menu"
+      >
+        {mobileOpen ? "✕" : "☰"}
+      </button>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="mobile-menu">
+          {!loading && user && (
+            <div className="mobile-menu-profile">
+              <img
+                src={profile?.avatar_url || avatarPlaceholder}
+                alt="avatar"
+                className="mobile-avatar"
+              />
+              <span className="mobile-menu-name">{profile?.full_name || user.email}</span>
+            </div>
+          )}
+          <Link to="/" onClick={closeAll}>All Recipes</Link>
+          <Link to="/about" onClick={closeAll}>About</Link>
+          {!loading && (
+            user ? (
+              <>
+                <Link to="/profile" onClick={closeAll}>Profile</Link>
+                <Link to="/my-recipes" onClick={closeAll}>My Recipes</Link>
+                {isAdmin && <Link to="/admin" onClick={closeAll}>Admin Dashboard</Link>}
+                <button onClick={handleLogout}>Logout</button>
+              </>
+            ) : (
+              <Link to="/login" onClick={closeAll}>Login</Link>
+            )
+          )}
+        </div>
+      )}
     </header>
   );
 }

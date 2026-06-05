@@ -5,6 +5,7 @@ import {
   updateRecipe,
   uploadRecipeImage,
 } from "../services/recipeService";
+import { CATEGORIES } from "../constants/categories";
 
 export default function EditRecipePage() {
   const { id } = useParams();
@@ -17,6 +18,7 @@ export default function EditRecipePage() {
   const [imageFile, setImageFile] = useState(null);
   const [ingredients, setIngredients] = useState("");
   const [steps, setSteps] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,6 +32,7 @@ export default function EditRecipePage() {
         setImage(recipe.image);
         setIngredients(recipe.ingredients.join(", "));
         setSteps(recipe.steps.join(", "));
+        setIsPublic(recipe.is_public ?? true);
       } catch (error) {
         alert(error.message);
       } finally {
@@ -50,12 +53,15 @@ export default function EditRecipePage() {
         imageUrl = await uploadRecipeImage(imageFile);
       }
 
+      const categorySlug = CATEGORIES.find((c) => c.name === category)?.slug ?? "other";
+
       const updatedRecipe = {
         title,
         category,
-        category_slug: category.toLowerCase().replaceAll(" ", "-"),
+        category_slug: categorySlug,
         time,
         image: imageUrl,
+        is_public: isPublic,
         ingredients: ingredients.split(",").map((item) => item.trim()),
         steps: steps.split(",").map((step) => step.trim()),
       };
@@ -84,12 +90,12 @@ export default function EditRecipePage() {
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <input
-          type="text"
-          placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
+        <select value={category} onChange={(e) => setCategory(e.target.value)} required>
+          <option value="">Select a category</option>
+          {CATEGORIES.map((cat) => (
+            <option key={cat.slug} value={cat.name}>{cat.name}</option>
+          ))}
+        </select>
 
         <input
           type="text"
@@ -123,6 +129,27 @@ export default function EditRecipePage() {
           value={steps}
           onChange={(e) => setSteps(e.target.value)}
         />
+
+        <div className="visibility-toggle">
+          <label className={`visibility-option ${isPublic ? "active" : ""}`}>
+            <input
+              type="radio"
+              name="visibility"
+              checked={isPublic}
+              onChange={() => setIsPublic(true)}
+            />
+            Public
+          </label>
+          <label className={`visibility-option ${!isPublic ? "active" : ""}`}>
+            <input
+              type="radio"
+              name="visibility"
+              checked={!isPublic}
+              onChange={() => setIsPublic(false)}
+            />
+            Private
+          </label>
+        </div>
 
         <button type="submit">Update Recipe</button>
       </form>

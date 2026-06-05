@@ -1,15 +1,32 @@
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import recipes from "../data/recipes.json";
+import { getRecipeById } from "../services/recipeService";
 import NotFoundPage from "./NotFoundPage";
+import recipePlaceholder from "../assets/recipe-placeholder.svg";
 
 export default function RecipeDetailPage() {
   const { id } = useParams();
+  const [recipe, setRecipe] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  const recipe = recipes.find((recipe) => recipe.id === Number(id));
+  useEffect(() => {
+    async function loadRecipe() {
+      try {
+        const data = await getRecipeById(id);
+        setRecipe(data);
+      } catch (error) {
+        setNotFound(true);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  if (!recipe) {
-    return <NotFoundPage />;
-  }
+    loadRecipe();
+  }, [id]);
+
+  if (loading) return <p>Loading recipe...</p>;
+  if (notFound || !recipe) return <NotFoundPage />;
 
   return (
     <div className="recipe-detail">
@@ -18,7 +35,7 @@ export default function RecipeDetailPage() {
       <h1>{recipe.title}</h1>
 
       <img
-        src={recipe.image}
+        src={recipe.image || recipePlaceholder}
         alt={recipe.title}
         className="recipe-detail-image"
       />

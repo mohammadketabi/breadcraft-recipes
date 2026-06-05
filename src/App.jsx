@@ -12,6 +12,7 @@ import AdminPage from "./pages/AdminPage";
 import EditRecipePage from "./pages/EditRecipePage";
 import AdminRoute from "./components/AdminRoute";
 import ProfilePage from "./pages/ProfilePage";
+import MyRecipesPage from "./pages/MyRecipesPage";
 
 export default function App() {
   return (
@@ -25,9 +26,17 @@ export default function App() {
         <Route
           path="/add-recipe"
           element={
-            <AdminRoute>
+            <ProtectedRoute>
               <AddRecipePage />
-            </AdminRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-recipes"
+          element={
+            <ProtectedRoute>
+              <MyRecipesPage />
+            </ProtectedRoute>
           }
         />
         <Route path="/login" element={<LoginPage />} />

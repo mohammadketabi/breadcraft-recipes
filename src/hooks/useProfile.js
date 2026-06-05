@@ -35,5 +35,5 @@ export default function useProfile() {
     loadProfile();
   }, [user, authLoading]);
 
-  return { profile, loading };
+  return { profile, loading, user };
 }

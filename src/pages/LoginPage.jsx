@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -18,7 +20,7 @@ export default function LoginPage() {
       return;
     }
 
-    alert("Logged in successfully!");
+    navigate("/");
   }
 
   async function handleSignup() {
