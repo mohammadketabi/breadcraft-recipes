@@ -7,7 +7,9 @@ import { uploadProfileImage } from "../services/profileService";
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
+
   const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState("");
 
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
@@ -17,7 +19,20 @@ export default function ProfilePage() {
     if (profile?.full_name) {
       setFullName(profile.full_name);
     }
+
+    if (profile?.avatar_url) {
+      setAvatarPreview(profile.avatar_url);
+    }
   }, [profile]);
+
+  function handleAvatarChange(e) {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -32,15 +47,16 @@ export default function ProfilePage() {
 
       if (avatarFile) {
         avatarUrl = await uploadProfileImage(avatarFile);
+        setAvatarPreview(avatarUrl);
       }
 
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          full_name: fullName,
-          avatar_url: avatarUrl,
-        })
-        .eq("id", user.id);
+      const { error: profileError } = await supabase.from("profiles").upsert({
+        id: user.id,
+        email: user.email,
+        full_name: fullName,
+        avatar_url: avatarUrl,
+        role: profile?.role || "user",
+      });
 
       if (profileError) throw profileError;
 
@@ -73,9 +89,9 @@ export default function ProfilePage() {
     <div className="profile-card">
       <h1>Profile</h1>
 
-      {profile?.avatar_url ? (
+      {avatarPreview ? (
         <img
-          src={profile.avatar_url}
+          src={avatarPreview}
           alt="Profile"
           className="profile-avatar-image"
         />
@@ -98,12 +114,7 @@ export default function ProfilePage() {
         />
 
         <label>Avatar</label>
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setAvatarFile(e.target.files[0])}
-        />
+        <input type="file" accept="image/*" onChange={handleAvatarChange} />
 
         <label>New Password</label>
         <input
