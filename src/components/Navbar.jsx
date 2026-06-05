@@ -41,6 +41,7 @@ export default function Navbar() {
                 <div className="user-dropdown">
                   <Link to="/profile" onClick={closeAll}>Profile</Link>
                   <Link to="/my-recipes" onClick={closeAll}>My Recipes</Link>
+                  <Link to="/saved-recipes" onClick={closeAll}>Saved Recipes</Link>
                   {isAdmin && <Link to="/admin" onClick={closeAll}>Admin Dashboard</Link>}
                   <button onClick={handleLogout}>Logout</button>
                 </div>
@@ -81,6 +82,7 @@ export default function Navbar() {
               <>
                 <Link to="/profile" onClick={closeAll}>Profile</Link>
                 <Link to="/my-recipes" onClick={closeAll}>My Recipes</Link>
+                <Link to="/saved-recipes" onClick={closeAll}>Saved Recipes</Link>
                 {isAdmin && <Link to="/admin" onClick={closeAll}>Admin Dashboard</Link>}
                 <button onClick={handleLogout}>Logout</button>
               </>

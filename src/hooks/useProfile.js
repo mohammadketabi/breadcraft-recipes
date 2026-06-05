@@ -28,7 +28,22 @@ export default function useProfile() {
         console.error(error.message);
       }
 
-      setProfile(data);
+      if (!data) {
+        // First login — create profile row
+        const { data: created } = await supabase
+          .from("profiles")
+          .insert({
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? "",
+          })
+          .select()
+          .single();
+        setProfile(created);
+      } else {
+        setProfile(data);
+      }
+
       setLoading(false);
     }
 

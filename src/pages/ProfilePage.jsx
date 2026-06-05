@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import useProfile from "../hooks/useProfile";
 import { supabase } from "../lib/supabaseClient";
 import { uploadProfileImage } from "../services/profileService";
@@ -49,10 +50,10 @@ export default function ProfilePage() {
 
       if (error) throw error;
 
-      alert("Profile updated successfully");
+      toast.success("Profile updated successfully");
       setAvatarFile(null);
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
     }
   }
 
@@ -60,7 +61,7 @@ export default function ProfilePage() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -69,11 +70,11 @@ export default function ProfilePage() {
 
       if (error) throw error;
 
-      alert("Password updated successfully");
+      toast.success("Password updated successfully");
       setPassword("");
       setConfirmPassword("");
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
     }
   }
 

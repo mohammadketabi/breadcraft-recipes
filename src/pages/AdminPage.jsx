@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import { confirmToast } from "../utils/confirmToast";
 import { getAllRecipes, deleteRecipe, updateRecipe } from "../services/recipeService";
 import { getProfiles, deleteProfile } from "../services/profileService";
 import recipePlaceholder from "../assets/recipe-placeholder.svg";
@@ -20,7 +22,7 @@ export default function AdminPage() {
         const data = await getAllRecipes();
         setRecipes(data);
       } catch (error) {
-        alert(error.message);
+        toast.error(error.message);
       } finally {
         setRecipesLoading(false);
       }
@@ -31,7 +33,7 @@ export default function AdminPage() {
         const data = await getProfiles();
         setUsers(data);
       } catch (error) {
-        alert(error.message);
+        toast.error(error.message);
       } finally {
         setUsersLoading(false);
       }
@@ -42,14 +44,14 @@ export default function AdminPage() {
   }, []);
 
   async function handleDelete(id) {
-    const confirmed = window.confirm("Are you sure you want to delete this recipe?");
+    const confirmed = await confirmToast("Delete this recipe? This cannot be undone.");
     if (!confirmed) return;
 
     try {
       await deleteRecipe(id);
       setRecipes((prev) => prev.filter((r) => r.id !== id));
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
     }
   }
 
@@ -60,19 +62,19 @@ export default function AdminPage() {
         prev.map((r) => r.id === recipe.id ? { ...r, featured: !r.featured } : r)
       );
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
     }
   }
 
   async function handleDeleteUser(id) {
-    const confirmed = window.confirm("Delete this user's profile? Their login account will still exist.");
+    const confirmed = await confirmToast("Delete this user's profile?");
     if (!confirmed) return;
 
     try {
       await deleteProfile(id);
       setUsers((prev) => prev.filter((u) => u.id !== id));
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
     }
   }
 
@@ -102,6 +104,7 @@ export default function AdminPage() {
               <tr>
                 <th style={{ width: 64 }}></th>
                 <th>Title</th>
+                <th>Author</th>
                 <th>Category</th>
                 <th>Visibility</th>
                 <th>Featured</th>
@@ -119,6 +122,22 @@ export default function AdminPage() {
                     />
                   </td>
                   <td>{recipe.title}</td>
+                  <td>
+                    {(() => {
+                      const author = users.find((u) => u.id === recipe.user_id);
+                      return (
+                        <div className="admin-author">
+                          <img
+                            src={author?.avatar_url || avatarPlaceholder}
+                            alt={author?.full_name || "Unknown"}
+                            className="admin-thumb admin-thumb--round"
+                            style={{ width: 28, height: 28 }}
+                          />
+                          <span>{author?.full_name || author?.email || "Unknown"}</span>
+                        </div>
+                      );
+                    })()}
+                  </td>
                   <td>{recipe.category}</td>
                   <td>
                     <span className={`visibility-badge ${recipe.is_public ? "badge-public" : "badge-private"}`}>

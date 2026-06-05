@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Layout from "./components/Layout";
 import HomePage from "./pages/HomePage";
 import RecipeDetailPage from "./pages/RecipeDetailPage";
@@ -13,9 +14,13 @@ import EditRecipePage from "./pages/EditRecipePage";
 import AdminRoute from "./components/AdminRoute";
 import ProfilePage from "./pages/ProfilePage";
 import MyRecipesPage from "./pages/MyRecipesPage";
+import SignupPage from "./pages/SignupPage";
+import SavedRecipesPage from "./pages/SavedRecipesPage";
 
 export default function App() {
   return (
+    <>
+    <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />
@@ -39,7 +44,16 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/saved-recipes"
+          element={
+            <ProtectedRoute>
+              <SavedRecipesPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
         <Route
           path="/admin"
           element={
@@ -51,9 +65,9 @@ export default function App() {
         <Route
           path="/edit-recipe/:id"
           element={
-            <AdminRoute>
+            <ProtectedRoute>
               <EditRecipePage />
-            </AdminRoute>
+            </ProtectedRoute>
           }
         />
         <Route
@@ -66,5 +80,6 @@ export default function App() {
         />
       </Route>
     </Routes>
+    </>
   );
 }
